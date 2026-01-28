@@ -1,15 +1,37 @@
 # LinkedInJobHelper
 
-The goal of this project is to help with the jobs section of linkedin
+A browser extension to streamline your LinkedIn job search by filtering out noise and highlighting high-quality opportunities.
 
-There are a lot of companies that post and have very vague information that makes the post seem fake, and there are a few other indicators
+## 🚀 Features
 
-I want to have a system that can help me cross out the items that seem to be fake
-highlight the ones that seem to be good and from interesting companies
+- **Keyword Filtering:** Automatically dim and label job cards based on your custom list of company names or job titles (e.g., "Confidential", "Revature").
+- **Easy Apply Filter:** Toggle to quickly identify or filter out "Easy Apply" listings.
+- **Privacy First:** All data and preferences are stored locally in your browser.
+- **Lightweight:** Built with Vanilla JavaScript, HTML, and CSS for maximum performance and minimal dependencies.
 
-an interesting company is one that seems like they are building something that might be useful and fun
+## 🛠️ Installation (Developer Mode)
 
-I want to be able to toggle different filters in the extension window, and have them effect the page directly
+1.  Clone this repository.
+2.  Open Chrome or Edge and navigate to `chrome://extensions`.
+3.  Enable **Developer mode** (toggle in the top right).
+4.  Click **Load unpacked**.
+5.  Select the `LinkedInJobHelper` folder.
 
-## Technology
-I want this to be in pure css js and html as much as we can
+## 📖 Usage
+
+1.  Click the extension icon in your browser toolbar.
+2.  **Add Keywords:** Type a company name or job title part and click "Add".
+3.  **Toggle Filters:** Use the switches to enable/disable specific keywords or the "Easy Apply" filter.
+4.  **View Results:** Refresh the LinkedIn Jobs page. Filtered jobs will be dimmed and labeled.
+
+## 🏗️ Development
+
+This project follows the **Conductor** spec-driven development framework.
+
+- **Tests:** Run `npm test` to execute the test suite (using Node.js built-in test runner).
+- **Architecture:** Manifest V3, Content Scripts, Popup UI.
+
+## 🔮 Future Roadmap
+
+- Local LLM integration (Ollama) for deep analysis of job descriptions.
+- "Interestingness" scoring for job postings.
