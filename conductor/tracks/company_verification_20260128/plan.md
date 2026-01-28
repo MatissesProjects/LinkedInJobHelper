@@ -23,4 +23,12 @@ This plan implements a background verification service using DuckDuckGo to valid
     - [x] Update `scripts/content.js` to extract company names and request verification from background script.
     - [x] Implement visual indicators (checkmark/warning icons) on job cards.
     - [x] Implement tooltip or hover state to show found links.
-- [~] Task: Conductor - User Manual Verification 'Content Script Integration' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Content Script Integration' (Protocol in workflow.md) 784571c
+
+## Phase 4: Popup UI Controls
+- [x] Task: Add Verification toggles to Popup UI. 781a87d
+    - [x] Add `verificationEnabled` and `hideUnverified` to `StorageService`.
+    - [x] Update `popup/popup.html` with two new toggles.
+    - [x] Update `popup/popup.js` to handle toggle events.
+    - [x] Update `scripts/content.js` to respect these settings (only verify if enabled, dim if unverified and hiding is on).
+- [ ] Task: Conductor - User Manual Verification 'Popup Controls' (Protocol in workflow.md)
