@@ -17,4 +17,4 @@
 ## Development & Testing
 - **Editor:** VS Code (or user's preferred editor)
 - **Debugging:** Chrome/Edge DevTools
-- **Test Framework:** TBD (Preference for lightweight, vanilla-friendly testing if needed later).
+- **Test Framework:** Node.js built-in test runner (`node --test`) for lightweight, dependency-free testing.
