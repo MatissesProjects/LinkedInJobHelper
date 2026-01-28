@@ -13,10 +13,10 @@ This plan covers the initial scaffolding and the core job card detection logic.
 - [x] Task: Conductor - User Manual Verification 'Foundation' (Protocol in workflow.md)
 
 ## Phase 2: Job Card Detection
-- [ ] Task: Research and identify LinkedIn DOM selectors for job cards.
-    - [ ] Identify the main job list container selector.
-    - [ ] Identify the individual job card selector.
-- [ ] Task: Implement MutationObserver for dynamic job loading.
-    - [ ] Write logic in `content.js` to observe the container.
-    - [ ] Log detected job IDs or titles to console for verification.
-- [ ] Task: Conductor - User Manual Verification 'Job Card Detection' (Protocol in workflow.md)
+- [x] Task: Research and identify LinkedIn DOM selectors for job cards. 4f42636
+    - [x] Identify the main job list container selector.
+    - [x] Identify the individual job card selector.
+- [x] Task: Implement MutationObserver for dynamic job loading. bc20ac6
+    - [x] Write logic in `content.js` to observe the container.
+    - [x] Log detected job IDs or titles to console for verification.
+- [x] Task: Conductor - User Manual Verification 'Job Card Detection' (Protocol in workflow.md) bc20ac6
