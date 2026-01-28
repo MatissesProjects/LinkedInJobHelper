@@ -12,12 +12,12 @@ This plan implements keyword-based filtering for LinkedIn job postings, managed 
 - [x] Task: Conductor - User Manual Verification 'Storage and State' (Protocol in workflow.md) 78c0df4
 
 ## Phase 2: Popup UI
-- [ ] Task: Create tag management UI in the popup.
-    - [ ] Write tests for popup UI logic (rendering list, adding/removing tags).
-    - [ ] Implement HTML/CSS for the tag list and input field.
-    - [ ] Implement JS logic to connect UI to `StorageService`.
-- [ ] Task: Add Easy Apply toggle to popup UI.
-- [ ] Task: Conductor - User Manual Verification 'Popup UI' (Protocol in workflow.md)
+- [x] Task: Create tag management UI in the popup. c0328cd
+    - [x] Write tests for popup UI logic (rendering list, adding/removing tags).
+    - [x] Implement HTML/CSS for the tag list and input field.
+    - [x] Implement JS logic to connect UI to `StorageService`.
+- [x] Task: Add Easy Apply toggle to popup UI. c0328cd
+- [~] Task: Conductor - User Manual Verification 'Popup UI' (Protocol in workflow.md)
 
 ## Phase 3: Content Script Filtering
 - [ ] Task: Implement filtering logic in content script.
