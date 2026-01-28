@@ -4,15 +4,184 @@
     <title>LinkedInJobHelper</title>
     <meta charset="UTF-8">
     <style>
-        body { width: 250px; padding: 10px; font-family: sans-serif; }
-        h1 { font-size: 16px; margin-bottom: 10px; }
+        :root {
+            --primary-color: #0a66c2;
+            --bg-color: #ffffff;
+            --text-color: #000000;
+            --secondary-text: #666666;
+            --border-color: #e0e0e0;
+            --danger-color: #cc0000;
+        }
+
+        body {
+            width: 300px;
+            padding: 15px;
+            font-family: -apple-system, system-ui, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", "Fira Sans", Ubuntu, Oxygen, "Oxygen Sans", Cantarell, "Droid Sans", "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Lucida Grande", Helvetica, Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+        }
+
+        h1 {
+            font-size: 18px;
+            margin: 0 0 15px 0;
+            color: var(--primary-color);
+        }
+
+        .section {
+            margin-bottom: 20px;
+        }
+
+        .section-title {
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .input-group {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 15px;
+        }
+
+        input[type="text"] {
+            flex: 1;
+            padding: 6px 10px;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            font-size: 13px;
+        }
+
+        button#add-keyword {
+            padding: 6px 12px;
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        .tag-list {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .tag-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 8px;
+            background: #f9f9f9;
+            border-radius: 4px;
+            border: 1px solid var(--border-color);
+        }
+
+        .tag-info {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex: 1;
+        }
+
+        .tag-text {
+            font-size: 13px;
+        }
+
+        .tag-actions {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .remove-btn {
+            color: var(--danger-color);
+            cursor: pointer;
+            font-size: 18px;
+            font-weight: bold;
+            line-height: 1;
+        }
+
+        /* Toggle Switch */
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 34px;
+            height: 20px;
+        }
+
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: .4s;
+            border-radius: 20px;
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 14px;
+            width: 14px;
+            left: 3px;
+            bottom: 3px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+
+        input:checked + .slider {
+            background-color: var(--primary-color);
+        }
+
+        input:checked + .slider:before {
+            transform: translateX(14px);
+        }
+
+        .easy-apply-section {
+            padding-top: 15px;
+            border-top: 1px solid var(--border-color);
+        }
     </style>
 </head>
 <body>
     <h1>LinkedInJobHelper</h1>
-    <div id="filters">
-        <!-- Toggles will be added here -->
+
+    <div class="section">
+        <div class="section-title">Filter Keywords</div>
+        <div class="input-group">
+            <input type="text" id="new-keyword" placeholder="e.g. Confidential">
+            <button id="add-keyword">Add</button>
+        </div>
+        <div id="filters" class="tag-list">
+            <!-- Tags will be rendered here -->
+        </div>
     </div>
-    <script src="popup.js"></script>
+
+    <div class="section easy-apply-section">
+        <div class="section-title">
+            <span>Filter "Easy Apply"</span>
+            <label class="switch">
+                <input type="checkbox" id="easy-apply-toggle">
+                <span class="slider"></span>
+            </label>
+        </div>
+    </div>
+
+    <script type="module" src="popup.js"></script>
 </body>
 </html>
