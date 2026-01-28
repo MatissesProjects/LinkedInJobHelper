@@ -20,9 +20,9 @@ This plan implements keyword-based filtering for LinkedIn job postings, managed 
 - [~] Task: Conductor - User Manual Verification 'Popup UI' (Protocol in workflow.md)
 
 ## Phase 3: Content Script Filtering
-- [ ] Task: Implement filtering logic in content script.
-    - [ ] Write tests for the filtering function (matching company/title against tags).
-    - [ ] Update `scripts/content.js` to apply styles based on matching tags.
-    - [ ] Implement detection for "Easy Apply" indicator on job cards.
-    - [ ] Implement listener for storage changes to update UI immediately.
-- [ ] Task: Conductor - User Manual Verification 'Content Script Filtering' (Protocol in workflow.md)
+- [x] Task: Implement filtering logic in content script. d60039b
+    - [x] Write tests for the filtering function (matching company/title against tags).
+    - [x] Update `scripts/content.js` to apply styles based on matching tags.
+    - [x] Implement detection for "Easy Apply" indicator on job cards.
+    - [x] Implement listener for storage changes to update UI immediately.
+- [x] Task: Conductor - User Manual Verification 'Content Script Filtering' (Protocol in workflow.md) bc20ac6
