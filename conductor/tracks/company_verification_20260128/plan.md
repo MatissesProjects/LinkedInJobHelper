@@ -18,9 +18,9 @@ This plan implements a background verification service using DuckDuckGo to valid
 - [~] Task: Conductor - User Manual Verification 'Data Management' (Protocol in workflow.md)
 
 ## Phase 3: Content Script Integration & UI
-- [ ] Task: Update content script to trigger verification and display status.
-    - [ ] Write tests for UI indicator rendering.
-    - [ ] Update `scripts/content.js` to extract company names and request verification from background script.
-    - [ ] Implement visual indicators (checkmark/warning icons) on job cards.
-    - [ ] Implement tooltip or hover state to show found links.
-- [ ] Task: Conductor - User Manual Verification 'Content Script Integration' (Protocol in workflow.md)
+- [x] Task: Update content script to trigger verification and display status. 0b32e2b
+    - [x] Write tests for UI indicator rendering.
+    - [x] Update `scripts/content.js` to extract company names and request verification from background script.
+    - [x] Implement visual indicators (checkmark/warning icons) on job cards.
+    - [x] Implement tooltip or hover state to show found links.
+- [~] Task: Conductor - User Manual Verification 'Content Script Integration' (Protocol in workflow.md)
