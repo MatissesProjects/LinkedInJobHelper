@@ -2,7 +2,7 @@
 
 This plan covers the initial scaffolding and the core job card detection logic.
 
-## Phase 1: Foundation
+## Phase 1: Foundation [checkpoint: ae68768]
 - [x] Task: Create extension manifest and directory structure. 1516629
     - [ ] Create `manifest.json` (V3).
     - [ ] Create `scripts/content.js`.
