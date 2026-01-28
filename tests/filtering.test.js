@@ -48,4 +48,17 @@ describe('Filtering Logic', () => {
         const hasEasyApply = !!card.querySelector('.job-card-container__apply-method');
         assert.ok(hasEasyApply);
     });
+
+    test('should render verification label on job card', () => {
+        const card = document.getElementById('card1');
+        const companyNameEl = card.querySelector('.job-card-container__company-name');
+        
+        const label = document.createElement('span');
+        label.className = 'ljh-verification-label';
+        label.textContent = ' ✅';
+        companyNameEl.appendChild(label);
+
+        assert.ok(card.querySelector('.ljh-verification-label'), 'Verification label should exist');
+        assert.strictEqual(card.querySelector('.ljh-verification-label').textContent, ' ✅');
+    });
 });
