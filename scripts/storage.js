@@ -9,7 +9,7 @@ export const StorageService = {
     ],
 
     /**
-     * Initializes the storage with default keywords if none exist.
+     * Initializes the storage with default keywords and states if none exist.
      */
     async init() {
         const stored = await this.getKeywords();
@@ -18,6 +18,36 @@ export const StorageService = {
             const defaults = JSON.parse(JSON.stringify(this.DEFAULT_KEYWORDS));
             await this.saveKeywords(defaults);
         }
+
+        const state = await this.getEasyApplyEnabled();
+        if (state === undefined) {
+            await this.setEasyApplyEnabled(false);
+        }
+    },
+
+    /**
+     * Retrieves the Easy Apply filter state.
+     * @returns {Promise<boolean>}
+     */
+    async getEasyApplyEnabled() {
+        return new Promise((resolve) => {
+            chrome.storage.local.get(['easyApplyEnabled'], (result) => {
+                resolve(result.easyApplyEnabled);
+            });
+        });
+    },
+
+    /**
+     * Sets the Easy Apply filter state.
+     * @param {boolean} enabled 
+     * @returns {Promise<void>}
+     */
+    async setEasyApplyEnabled(enabled) {
+        return new Promise((resolve) => {
+            chrome.storage.local.set({ easyApplyEnabled: enabled }, () => {
+                resolve();
+            });
+        });
     },
 
     /**

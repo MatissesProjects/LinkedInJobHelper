@@ -120,4 +120,20 @@ describe('StorageService', () => {
     const stored2 = await new Promise(resolve => chrome.storage.local.get('keywords', resolve));
     assert.strictEqual(stored2.keywords[0].enabled, false);
   });
+
+  test('should manage easyApplyEnabled state', async () => {
+    if (!StorageService) assert.fail('StorageService not implemented');
+
+    await StorageService.init();
+    let stored = await new Promise(resolve => chrome.storage.local.get('easyApplyEnabled', resolve));
+    assert.strictEqual(stored.easyApplyEnabled, false, 'Should be disabled by default');
+
+    await StorageService.setEasyApplyEnabled(true);
+    stored = await new Promise(resolve => chrome.storage.local.get('easyApplyEnabled', resolve));
+    assert.strictEqual(stored.easyApplyEnabled, true);
+
+    await StorageService.setEasyApplyEnabled(false);
+    stored = await new Promise(resolve => chrome.storage.local.get('easyApplyEnabled', resolve));
+    assert.strictEqual(stored.easyApplyEnabled, false);
+  });
 });
