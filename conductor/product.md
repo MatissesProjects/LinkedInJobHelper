@@ -15,6 +15,8 @@ LinkedIn job listings are often cluttered with:
 
 ## Key Features
 - **Spam Filtering:** Identify and hide postings with generic company names or AI-generated sounding descriptions.
+- **Keyword Filtering:** Manage toggleable keyword tags for Company Names and Job Titles to visually dim and label matching postings (e.g., "Confidential").
+- **Easy Apply Filter:** A specialized toggle to specifically identify and filter jobs that use LinkedIn's "Easy Apply" feature.
 - **Local LLM Verification:** Integrate with a local Ollama instance to perform deeper analysis on specific postings.
 - **Targeted Analysis:** Trigger LLM-based "interestingness" checks only on opened or specifically tagged job postings to maintain performance.
 - **Visual Highlighting:** Visually mark "interesting" jobs (e.g., those solving unique problems) with a distinct highlight (e.g., green border).
