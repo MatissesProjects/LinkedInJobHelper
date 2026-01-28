@@ -23,6 +23,16 @@ export const StorageService = {
         if (state === undefined) {
             await this.setEasyApplyEnabled(false);
         }
+
+        const verificationState = await this.getVerificationEnabled();
+        if (verificationState === undefined) {
+            await this.setVerificationEnabled(true);
+        }
+
+        const hideUnverifiedState = await this.getHideUnverified();
+        if (hideUnverifiedState === undefined) {
+            await this.setHideUnverified(false);
+        }
     },
 
     /**
@@ -45,6 +55,38 @@ export const StorageService = {
     async setEasyApplyEnabled(enabled) {
         return new Promise((resolve) => {
             chrome.storage.local.set({ easyApplyEnabled: enabled }, () => {
+                resolve();
+            });
+        });
+    },
+
+    async getVerificationEnabled() {
+        return new Promise((resolve) => {
+            chrome.storage.local.get(['verificationEnabled'], (result) => {
+                resolve(result.verificationEnabled);
+            });
+        });
+    },
+
+    async setVerificationEnabled(enabled) {
+        return new Promise((resolve) => {
+            chrome.storage.local.set({ verificationEnabled: enabled }, () => {
+                resolve();
+            });
+        });
+    },
+
+    async getHideUnverified() {
+        return new Promise((resolve) => {
+            chrome.storage.local.get(['hideUnverified'], (result) => {
+                resolve(result.hideUnverified);
+            });
+        });
+    },
+
+    async setHideUnverified(enabled) {
+        return new Promise((resolve) => {
+            chrome.storage.local.set({ hideUnverified: enabled }, () => {
                 resolve();
             });
         });

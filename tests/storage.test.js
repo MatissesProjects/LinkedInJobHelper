@@ -136,4 +136,20 @@ describe('StorageService', () => {
     stored = await new Promise(resolve => chrome.storage.local.get('easyApplyEnabled', resolve));
     assert.strictEqual(stored.easyApplyEnabled, false);
   });
+
+  test('should manage verification settings', async () => {
+    if (!StorageService) assert.fail('StorageService not implemented');
+
+    await StorageService.init();
+    let stored = await new Promise(resolve => chrome.storage.local.get(['verificationEnabled', 'hideUnverified'], resolve));
+    assert.strictEqual(stored.verificationEnabled, true, 'Verification should be enabled by default');
+    assert.strictEqual(stored.hideUnverified, false, 'Hide Unverified should be disabled by default');
+
+    await StorageService.setVerificationEnabled(false);
+    await StorageService.setHideUnverified(true);
+    
+    stored = await new Promise(resolve => chrome.storage.local.get(['verificationEnabled', 'hideUnverified'], resolve));
+    assert.strictEqual(stored.verificationEnabled, false);
+    assert.strictEqual(stored.hideUnverified, true);
+  });
 });

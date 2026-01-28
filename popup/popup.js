@@ -5,6 +5,8 @@ document.addEventListener('DOMContentLoaded', async () => {
     const newKeywordInput = document.getElementById('new-keyword');
     const addKeywordBtn = document.getElementById('add-keyword');
     const easyApplyToggle = document.getElementById('easy-apply-toggle');
+    const verificationToggle = document.getElementById('verification-toggle');
+    const hideUnverifiedToggle = document.getElementById('hide-unverified-toggle');
 
     /**
      * Renders the list of keyword tags.
@@ -67,9 +69,26 @@ document.addEventListener('DOMContentLoaded', async () => {
         await StorageService.setEasyApplyEnabled(e.target.checked);
     });
 
+    // Verification toggle events
+    verificationToggle.addEventListener('change', async (e) => {
+        await StorageService.setVerificationEnabled(e.target.checked);
+    });
+
+    hideUnverifiedToggle.addEventListener('change', async (e) => {
+        await StorageService.setHideUnverified(e.target.checked);
+    });
+
     // Initial load
     await StorageService.init();
+    
     const easyApplyEnabled = await StorageService.getEasyApplyEnabled();
     easyApplyToggle.checked = easyApplyEnabled;
+
+    const verificationEnabled = await StorageService.getVerificationEnabled();
+    verificationToggle.checked = verificationEnabled;
+
+    const hideUnverified = await StorageService.getHideUnverified();
+    hideUnverifiedToggle.checked = hideUnverified;
+
     renderTags();
 });

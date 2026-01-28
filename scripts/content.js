@@ -9,15 +9,19 @@ console.log('LinkedInJobHelper: Content script loaded.');
 
 let activeKeywords = [];
 let easyApplyEnabled = false;
+let verificationEnabled = true;
+let hideUnverified = false;
 
 /**
  * Loads the current settings from storage.
  */
 async function loadSettings() {
     return new Promise((resolve) => {
-        chrome.storage.local.get(['keywords', 'easyApplyEnabled'], (result) => {
+        chrome.storage.local.get(['keywords', 'easyApplyEnabled', 'verificationEnabled', 'hideUnverified'], (result) => {
             activeKeywords = (result.keywords || []).filter(k => k.enabled);
             easyApplyEnabled = !!result.easyApplyEnabled;
+            verificationEnabled = result.verificationEnabled !== undefined ? result.verificationEnabled : true;
+            hideUnverified = !!result.hideUnverified;
             resolve();
         });
     });
@@ -75,6 +79,11 @@ function applyVerificationUI(card, data) {
         label.textContent = '⚠️';
         label.title = 'Unverified: No official website or social profiles found';
         label.style.color = '#cc0000';
+        
+        if (hideUnverified) {
+            card.style.opacity = '0.4';
+            card.style.filter = 'grayscale(100%)';
+        }
     }
 
     companyNameEl.appendChild(label);
@@ -143,8 +152,8 @@ function applyFiltersToCard(card) {
         if (label) label.remove();
     }
 
-    // Trigger verification if not already verified/pending
-    if (companyName && !card.dataset.verificationPending) {
+    // Trigger verification if enabled and not already verified/pending
+    if (verificationEnabled && companyName && !card.dataset.verificationPending) {
         verifyCompany(companyName, card);
     }
 }
@@ -196,7 +205,7 @@ function setupObserver() {
  */
 function listenForChanges() {
     chrome.storage.onChanged.addListener(async (changes, area) => {
-        if (area === 'local' && (changes.keywords || changes.easyApplyEnabled)) {
+        if (area === 'local' && (changes.keywords || changes.easyApplyEnabled || changes.verificationEnabled || changes.hideUnverified)) {
             await loadSettings();
             reprocessAllCards();
         }
