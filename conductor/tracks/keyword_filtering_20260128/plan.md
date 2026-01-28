@@ -19,7 +19,7 @@ This plan implements keyword-based filtering for LinkedIn job postings, managed 
 - [x] Task: Add Easy Apply toggle to popup UI. c0328cd
 - [~] Task: Conductor - User Manual Verification 'Popup UI' (Protocol in workflow.md)
 
-## Phase 3: Content Script Filtering
+## Phase 3: Content Script Filtering [checkpoint: 1c1fa36]
 - [x] Task: Implement filtering logic in content script. d60039b
     - [x] Write tests for the filtering function (matching company/title against tags).
     - [x] Update `scripts/content.js` to apply styles based on matching tags.
