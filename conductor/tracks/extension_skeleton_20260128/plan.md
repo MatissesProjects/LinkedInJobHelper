@@ -12,7 +12,7 @@ This plan covers the initial scaffolding and the core job card detection logic.
     - [x] Verify background/content script initialization via console.
 - [x] Task: Conductor - User Manual Verification 'Foundation' (Protocol in workflow.md)
 
-## Phase 2: Job Card Detection
+## Phase 2: Job Card Detection [checkpoint: 691c58e]
 - [x] Task: Research and identify LinkedIn DOM selectors for job cards. 4f42636
     - [x] Identify the main job list container selector.
     - [x] Identify the individual job card selector.
