@@ -11,7 +11,7 @@ This plan implements keyword-based filtering for LinkedIn job postings, managed 
     - [x] Add `easyApplyEnabled` to storage and implement toggle logic.
 - [x] Task: Conductor - User Manual Verification 'Storage and State' (Protocol in workflow.md) 78c0df4
 
-## Phase 2: Popup UI
+## Phase 2: Popup UI [checkpoint: 036119b]
 - [x] Task: Create tag management UI in the popup. c0328cd
     - [x] Write tests for popup UI logic (rendering list, adding/removing tags).
     - [x] Implement HTML/CSS for the tag list and input field.
