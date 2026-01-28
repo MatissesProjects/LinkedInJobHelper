@@ -2,13 +2,13 @@
 
 This plan implements a background verification service using DuckDuckGo to validate companies on LinkedIn.
 
-## Phase 1: Search Service (Background Script)
+## Phase 1: Search Service (Background Script) [checkpoint: 49ea794]
 - [x] Task: Create background service worker and implement search logic. 00cb997
     - [x] Create `scripts/background.js`.
     - [x] Write tests for `SearchService` (parsing DuckDuckGo HTML for URLs).
     - [x] Implement `fetch` logic to DuckDuckGo HTML interface.
     - [x] Implement result parsing for Primary Website and Social Profiles.
-- [ ] Task: Conductor - User Manual Verification 'Search Service' (Protocol in workflow.md)
+- [~] Task: Conductor - User Manual Verification 'Search Service' (Protocol in workflow.md)
 
 ## Phase 2: Verification Data Management
 - [ ] Task: Implement caching and persistence for verification results.
