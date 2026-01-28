@@ -19,8 +19,8 @@ test('manifest.json has correct permissions', () => {
   assert.ok(manifest.host_permissions.includes('http://localhost:11434/*'), 'Should have Ollama host permission');
 });
 
-test('content script is restricted to LinkedIn jobs', () => {
-  const manifest = JSON.parse(fs.readFileSync('manifest.json', 'utf8'));
-  const jobsScript = manifest.content_scripts.find(s => s.js.includes('scripts/content.js'));
-  assert.ok(jobsScript.matches.includes('https://www.linkedin.com/jobs/*'), 'Should only match LinkedIn job pages');
+test('content script contains MutationObserver logic', () => {
+  const content = fs.readFileSync('scripts/content.js', 'utf8');
+  assert.ok(content.includes('MutationObserver'), 'Should use MutationObserver');
+  assert.ok(content.includes('.job-card-container'), 'Should reference the job card selector');
 });
