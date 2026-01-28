@@ -10,6 +10,10 @@ describe('SearchService', () => {
     let SearchService;
 
     beforeEach(async () => {
+        // Setup global DOMParser for tests
+        const dom = new JSDOM();
+        global.DOMParser = dom.window.DOMParser;
+
         // Dynamic import to simulate module loading
         try {
             const module = await import('../scripts/search-service.js');

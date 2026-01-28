@@ -1,7 +1,6 @@
 /**
  * Service for performing DuckDuckGo searches and parsing results.
  */
-import { JSDOM } from 'jsdom';
 
 export const SearchService = {
     /**
@@ -10,16 +9,8 @@ export const SearchService = {
      * @returns {Object} { website: string|null, social: string[] }
      */
     parseResults(html) {
-        // In a real browser extension, we use native DOMParser.
-        // In Node.js testing environment, we use JSDOM.
-        let doc;
-        if (typeof DOMParser !== 'undefined') {
-            const parser = new DOMParser();
-            doc = parser.parseFromString(html, 'text/html');
-        } else {
-            const dom = new JSDOM(html);
-            doc = dom.window.document;
-        }
+        const parser = new DOMParser();
+        const doc = parser.parseFromString(html, 'text/html');
 
         const results = doc.querySelectorAll('.result__a');
         const socialDomains = ['linkedin.com', 'twitter.com', 'crunchbase.com', 'facebook.com', 'instagram.com'];

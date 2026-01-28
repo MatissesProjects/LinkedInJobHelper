@@ -36,8 +36,10 @@ async function verifyCompany(companyName, card) {
     if (card.dataset.verificationPending === 'true') return;
     card.dataset.verificationPending = 'true';
 
+    console.log(`Requesting verification for: ${companyName}`);
     chrome.runtime.sendMessage({ action: 'verifyCompany', companyName }, (response) => {
         card.dataset.verificationPending = 'false';
+        console.log(`Verification response for ${companyName}:`, response);
         if (response && response.success) {
             applyVerificationUI(card, response.data);
         } else {
