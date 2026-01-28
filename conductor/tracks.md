@@ -4,5 +4,5 @@ This file tracks all major tracks for the project. Each track has its own detail
 
 ---
 
-- [ ] **Track: Initialize browser extension skeleton and implement basic LinkedIn job card detection.**
+- [x] **Track: Initialize browser extension skeleton and implement basic LinkedIn job card detection.**
   *Link: [./tracks/extension_skeleton_20260128/](./tracks/extension_skeleton_20260128/)*
