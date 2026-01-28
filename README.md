@@ -10,3 +10,6 @@ highlight the ones that seem to be good and from interesting companies
 an interesting company is one that seems like they are building something that might be useful and fun
 
 I want to be able to toggle different filters in the extension window, and have them effect the page directly
+
+## Technology
+I want this to be in pure css js and html as much as we can
