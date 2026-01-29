@@ -43,6 +43,21 @@ export const StorageService = {
         if (llmModel === undefined) {
             await this.setLLMModel('qwen3:8b');
         }
+
+        const priorityKeywords = await this.getPriorityKeywords();
+        if (priorityKeywords === undefined) {
+            await this.savePriorityKeywords([]);
+        }
+
+        const idealRoleText = await this.getIdealRoleText();
+        if (idealRoleText === undefined) {
+            await this.setIdealRoleText('');
+        }
+
+        const minScoreThreshold = await this.getMinScoreThreshold();
+        if (minScoreThreshold === undefined) {
+            await this.setMinScoreThreshold(7);
+        }
     },
 
     /**
@@ -193,5 +208,78 @@ export const StorageService = {
             keyword.enabled = !keyword.enabled;
             await this.saveKeywords(keywords);
         }
+    },
+
+    // --- Ideal Job Criteria Storage ---
+
+    async getPriorityKeywords() {
+        return new Promise((resolve) => {
+            chrome.storage.local.get(['priorityKeywords'], (result) => {
+                resolve(result.priorityKeywords);
+            });
+        });
+    },
+
+    async savePriorityKeywords(keywords) {
+        return new Promise((resolve) => {
+            chrome.storage.local.set({ priorityKeywords: keywords }, () => {
+                resolve();
+            });
+        });
+    },
+
+    async addPriorityKeyword(text) {
+        const keywords = await this.getPriorityKeywords() || [];
+        if (!keywords.some(k => k.text === text)) {
+            keywords.push({ text, enabled: true }); // Default to enabled for priority
+            await this.savePriorityKeywords(keywords);
+        }
+    },
+
+    async removePriorityKeyword(text) {
+        let keywords = await this.getPriorityKeywords() || [];
+        keywords = keywords.filter(k => k.text !== text);
+        await this.savePriorityKeywords(keywords);
+    },
+
+    async togglePriorityKeyword(text) {
+        const keywords = await this.getPriorityKeywords() || [];
+        const keyword = keywords.find(k => k.text === text);
+        if (keyword) {
+            keyword.enabled = !keyword.enabled;
+            await this.savePriorityKeywords(keywords);
+        }
+    },
+
+    async getIdealRoleText() {
+        return new Promise((resolve) => {
+            chrome.storage.local.get(['idealRoleText'], (result) => {
+                resolve(result.idealRoleText);
+            });
+        });
+    },
+
+    async setIdealRoleText(text) {
+        return new Promise((resolve) => {
+            chrome.storage.local.set({ idealRoleText: text }, () => {
+                resolve();
+            });
+        });
+    },
+
+    async getMinScoreThreshold() {
+        return new Promise((resolve) => {
+            chrome.storage.local.get(['minScoreThreshold'], (result) => {
+                resolve(result.minScoreThreshold);
+            });
+        });
+    },
+
+    async setMinScoreThreshold(score) {
+        return new Promise((resolve) => {
+            chrome.storage.local.set({ minScoreThreshold: score }, () => {
+                resolve();
+            });
+        });
     }
 };
