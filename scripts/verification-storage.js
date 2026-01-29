@@ -3,7 +3,7 @@
  * Uses chrome.storage.local to cache results.
  */
 export const VerificationStorage = {
-    CACHE_KEY: 'verification_cache',
+    CACHE_KEY: 'verification_cache_v2',
 
     /**
      * Retrieves the entire cache from storage.
