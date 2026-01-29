@@ -7,6 +7,10 @@ document.addEventListener('DOMContentLoaded', async () => {
     const easyApplyToggle = document.getElementById('easy-apply-toggle');
     const verificationToggle = document.getElementById('verification-toggle');
     const hideUnverifiedToggle = document.getElementById('hide-unverified-toggle');
+    const llmUrlInput = document.getElementById('llm-url');
+    const llmModelInput = document.getElementById('llm-model');
+    const testConnectionBtn = document.getElementById('test-connection');
+    const connectionStatus = document.getElementById('connection-status');
 
     /**
      * Renders the list of keyword tags.
@@ -78,6 +82,36 @@ document.addEventListener('DOMContentLoaded', async () => {
         await StorageService.setHideUnverified(e.target.checked);
     });
 
+    // LLM Settings events
+    llmUrlInput.addEventListener('input', async (e) => {
+        await StorageService.setLLMUrl(e.target.value.trim());
+    });
+
+    llmModelInput.addEventListener('input', async (e) => {
+        await StorageService.setLLMModel(e.target.value.trim());
+    });
+
+    testConnectionBtn.addEventListener('click', async () => {
+        connectionStatus.textContent = 'Testing...';
+        connectionStatus.style.color = '#666';
+        
+        const url = llmUrlInput.value.trim();
+        try {
+            // Ollama typically has a tag endpoint or just base URL for status
+            const response = await fetch(`${url}/api/tags`);
+            if (response.ok) {
+                connectionStatus.textContent = 'Connected successfully!';
+                connectionStatus.style.color = 'green';
+            } else {
+                connectionStatus.textContent = `Error: ${response.status}`;
+                connectionStatus.style.color = 'red';
+            }
+        } catch (error) {
+            connectionStatus.textContent = 'Connection failed. Is Ollama running?';
+            connectionStatus.style.color = 'red';
+        }
+    });
+
     // Initial load
     await StorageService.init();
     
@@ -89,6 +123,9 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     const hideUnverified = await StorageService.getHideUnverified();
     hideUnverifiedToggle.checked = hideUnverified;
+
+    llmUrlInput.value = await StorageService.getLLMUrl() || '';
+    llmModelInput.value = await StorageService.getLLMModel() || '';
 
     renderTags();
 });

@@ -199,6 +199,22 @@
         </div>
     </div>
 
+    <div class="section ai-section" style="border-top: 1px solid var(--border-color); padding-top: 15px;">
+        <div class="section-title">AI Analysis (Ollama)</div>
+        <div class="input-group" style="flex-direction: column; align-items: stretch;">
+            <div style="display: flex; flex-direction: column; gap: 4px; margin-bottom: 8px;">
+                <label style="font-size: 11px; color: var(--secondary-text);">Ollama URL</label>
+                <input type="text" id="llm-url" placeholder="http://localhost:11434">
+            </div>
+            <div style="display: flex; flex-direction: column; gap: 4px; margin-bottom: 8px;">
+                <label style="font-size: 11px; color: var(--secondary-text);">Model Name</label>
+                <input type="text" id="llm-model" placeholder="llama3">
+            </div>
+            <button id="test-connection" style="background-color: #666;">Test Connection</button>
+            <div id="connection-status" style="font-size: 11px; margin-top: 4px; text-align: center;"></div>
+        </div>
+    </div>
+
     <script type="module" src="popup.js"></script>
 </body>
 </html>

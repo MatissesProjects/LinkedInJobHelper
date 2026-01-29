@@ -33,6 +33,16 @@ export const StorageService = {
         if (hideUnverifiedState === undefined) {
             await this.setHideUnverified(false);
         }
+
+        const llmUrl = await this.getLLMUrl();
+        if (llmUrl === undefined) {
+            await this.setLLMUrl('http://localhost:11434');
+        }
+
+        const llmModel = await this.getLLMModel();
+        if (llmModel === undefined) {
+            await this.setLLMModel('llama3');
+        }
     },
 
     /**
@@ -87,6 +97,38 @@ export const StorageService = {
     async setHideUnverified(enabled) {
         return new Promise((resolve) => {
             chrome.storage.local.set({ hideUnverified: enabled }, () => {
+                resolve();
+            });
+        });
+    },
+
+    async getLLMUrl() {
+        return new Promise((resolve) => {
+            chrome.storage.local.get(['llmUrl'], (result) => {
+                resolve(result.llmUrl);
+            });
+        });
+    },
+
+    async setLLMUrl(url) {
+        return new Promise((resolve) => {
+            chrome.storage.local.set({ llmUrl: url }, () => {
+                resolve();
+            });
+        });
+    },
+
+    async getLLMModel() {
+        return new Promise((resolve) => {
+            chrome.storage.local.get(['llmModel'], (result) => {
+                resolve(result.llmModel);
+            });
+        });
+    },
+
+    async setLLMModel(model) {
+        return new Promise((resolve) => {
+            chrome.storage.local.set({ llmModel: model }, () => {
                 resolve();
             });
         });

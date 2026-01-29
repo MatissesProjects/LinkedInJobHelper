@@ -3,14 +3,14 @@
 This plan details the steps to connect the LinkedInJobHelper extension to a local Ollama instance for AI-powered job analysis.
 
 ## Phase 1: Configuration & Connectivity
-- [ ] Task: Update `StorageService` to handle LLM settings (URL, Model).
-- [ ] Task: Update `popup` UI to include an "AI Settings" section (collapsible or separate tab).
-    - [ ] Input for API URL (default: `http://localhost:11434`).
-    - [ ] Input for Model Name (default: `llama3`).
-    - [ ] "Test Connection" button.
-- [ ] Task: Implement `LLMService` (script) to handle the `fetch` calls to Ollama.
-    - [ ] `checkConnection()` function.
-    - [ ] `listModels()` (optional, to populate dropdown).
+- [x] Task: Update `StorageService` to handle LLM settings (URL, Model).
+- [x] Task: Update `popup` UI to include an "AI Settings" section (collapsible or separate tab).
+    - [x] Input for API URL (default: `http://localhost:11434`).
+    - [x] Input for Model Name (default: `llama3`).
+    - [x] "Test Connection" button.
+- [x] Task: Implement `LLMService` (script) to handle the `fetch` calls to Ollama.
+    - [x] `checkConnection()` function.
+    - [x] `listModels()` (optional, to populate dropdown).
 
 ## Phase 2: Content Script & Scraping
 - [ ] Task: Identify selectors for the *full* job description in the detailed view (LinkedIn changes classes often, so need robust fallbacks).
