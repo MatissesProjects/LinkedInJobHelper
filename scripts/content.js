@@ -167,12 +167,156 @@ function processJobCard(card) {
     applyFiltersToCard(card);
 }
 
+// --- AI Analysis Features ---
+
+function injectAnalyzeButton(detailsContainer) {
+    // Prevent duplicates
+    if (detailsContainer.querySelector('.ljh-analyze-btn')) return;
+
+    const titleSection = detailsContainer.querySelector('.jobs-details-top-card__content-container') || 
+                         detailsContainer.querySelector('.job-details-jobs-unified-top-card__content-container') ||
+                         detailsContainer.querySelector('.t-24'); // Fallback for some layouts
+    
+    if (!titleSection) return;
+
+    const btn = document.createElement('button');
+    btn.className = 'ljh-analyze-btn';
+    btn.textContent = '🤖 Analyze with AI';
+    btn.style.cssText = `
+        margin: 10px 0;
+        padding: 8px 16px;
+        background-color: #0a66c2;
+        color: white;
+        border: none;
+        border-radius: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        transition: background-color 0.2s;
+    `;
+    
+    btn.onmouseover = () => btn.style.backgroundColor = '#004182';
+    btn.onmouseout = () => btn.style.backgroundColor = '#0a66c2';
+
+    btn.onclick = async (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        await runAnalysis(detailsContainer, btn);
+    };
+
+    // Insert after title or at top
+    titleSection.appendChild(btn);
+}
+
+function scrapeJobData(detailsContainer) {
+    const titleEl = detailsContainer.querySelector('.jobs-unified-top-card__job-title') || 
+                    detailsContainer.querySelector('h1');
+    const companyEl = detailsContainer.querySelector('.jobs-unified-top-card__company-name') ||
+                      detailsContainer.querySelector('.jobs-unified-top-card__subtitle-primary-grouping a');
+    const descriptionEl = detailsContainer.querySelector('#job-details') || 
+                          detailsContainer.querySelector('.jobs-description-content__text');
+
+    return {
+        title: titleEl ? titleEl.textContent.trim() : 'Unknown Job',
+        company: companyEl ? companyEl.textContent.trim() : 'Unknown Company',
+        description: descriptionEl ? descriptionEl.innerText.trim() : ''
+    };
+}
+
+async function runAnalysis(container, btn) {
+    const data = scrapeJobData(container);
+    if (!data.description) {
+        alert('Could not find job description text.');
+        return;
+    }
+
+    btn.textContent = '⏳ Analyzing...';
+    btn.disabled = true;
+
+    // Create prompt
+    const prompt = `
+        Analyze this job posting:
+        Role: ${data.title}
+        Company: ${data.company}
+        
+        Description:
+        ${data.description.substring(0, 3000)} (truncated)
+
+        Please provide:
+        1. A 2-sentence summary.
+        2. A "Green Flags" list (max 3).
+        3. A "Red Flags" list (max 3).
+        4. An "Interestingness Score" (1-10) for a senior engineer.
+    `;
+
+    chrome.runtime.sendMessage({ action: 'analyzeJob', prompt }, (response) => {
+        btn.textContent = '🤖 Analyze with AI';
+        btn.disabled = false;
+
+        if (response && response.success) {
+            displayAnalysisResult(container, response.data);
+        } else {
+            alert('Analysis failed: ' + (response ? response.error : 'Unknown error'));
+        }
+    });
+}
+
+function displayAnalysisResult(container, text) {
+    const existing = container.querySelector('.ljh-analysis-result');
+    if (existing) existing.remove();
+
+    const resultBox = document.createElement('div');
+    resultBox.className = 'ljh-analysis-result';
+    resultBox.style.cssText = `
+        margin: 15px;
+        padding: 15px;
+        background: #f3f6f8;
+        border: 1px solid #e0e0e0;
+        border-radius: 8px;
+        font-family: monospace;
+        white-space: pre-wrap;
+        font-size: 13px;
+        color: #333;
+    `;
+    
+    // Simple markdown-ish parsing for bolding
+    resultBox.innerHTML = `<strong>AI Analysis:</strong>\n\n${text.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')}`;
+
+    // Insert before description
+    const descContainer = container.querySelector('.jobs-description__content') || 
+                          container.querySelector('#job-details').parentElement;
+    
+    if (descContainer) {
+        descContainer.insertBefore(resultBox, descContainer.firstChild);
+    } else {
+        container.appendChild(resultBox);
+    }
+}
+
+function processJobDetails(node) {
+    // Check if it's the right container
+    if (node.querySelector('#job-details') || node.matches('.jobs-search__job-details')) {
+        injectAnalyzeButton(node);
+    } else {
+        // Sometimes the node is a wrapper, search inside
+        const details = node.querySelector('.jobs-search__job-details') || 
+                        (node.querySelector && node.querySelector('#job-details') ? node : null);
+        if (details) injectAnalyzeButton(details);
+    }
+}
+
 /**
  * Re-scans all job cards and applies current filters.
  */
 function reprocessAllCards() {
     const cards = document.querySelectorAll('.job-card-container');
     cards.forEach(processJobCard);
+
+    // Also check for already open details pane
+    const details = document.querySelector('.jobs-search__job-details');
+    if (details) injectAnalyzeButton(details);
 }
 
 /**
@@ -184,12 +328,16 @@ function setupObserver() {
             if (mutation.type === 'childList') {
                 mutation.addedNodes.forEach(node => {
                     if (node.nodeType === Node.ELEMENT_NODE) {
+                        // Job Cards
                         if (node.matches('.job-card-container')) {
                             processJobCard(node);
                         } else {
                             const nestedCards = node.querySelectorAll('.job-card-container');
                             nestedCards.forEach(processJobCard);
                         }
+
+                        // Job Details Pane
+                        processJobDetails(node);
                     }
                 });
             }

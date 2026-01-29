@@ -6,7 +6,7 @@ Enable the extension to communicate with a locally running Ollama instance. This
 ## Functional Requirements
 ### 1. Configuration (Popup UI)
 - **Ollama URL:** Input field to specify the local API endpoint (default: `http://localhost:11434`).
-- **Model Selection:** Input field or dropdown to specify the model to use (e.g., `llama3`, `mistral`, `gemma`).
+- **Model Selection:** Input field or dropdown to specify the model to use (e.g., `qwen3:8b`, `mistral`, `gemma`).
 - **Test Connection:** A button to verify the extension can talk to Ollama.
 
 ### 2. Analysis Trigger

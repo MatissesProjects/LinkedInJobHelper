@@ -1,5 +1,7 @@
 import { SearchService } from './search-service.js';
 import { VerificationStorage } from './verification-storage.js';
+import { LLMService } from './llm-service.js';
+import { StorageService } from './storage.js';
 
 console.log('Background service worker started.');
 
@@ -71,5 +73,31 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
         });
             
         return true; // Keep message channel open for async response
+    }
+
+    if (request.action === 'analyzeJob') {
+        console.log('Received analysis request.');
+        (async () => {
+            try {
+                const url = await StorageService.getLLMUrl();
+                const model = await StorageService.getLLMModel();
+                
+                console.log('Retrieved Settings - URL:', url, 'Model:', model);
+
+                if (!url || !model) {
+                    throw new Error('LLM settings not configured.');
+                }
+
+                console.log(`Sending prompt to ${model} at ${url}...`);
+                const response = await LLMService.generate(url, model, request.prompt);
+                console.log('Analysis complete.');
+                
+                sendResponse({ success: true, data: response });
+            } catch (error) {
+                console.error('Analysis error:', error);
+                sendResponse({ success: false, error: error.message });
+            }
+        })();
+        return true; // Async response
     }
 });

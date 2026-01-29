@@ -41,7 +41,7 @@ export const StorageService = {
 
         const llmModel = await this.getLLMModel();
         if (llmModel === undefined) {
-            await this.setLLMModel('llama3');
+            await this.setLLMModel('qwen3:8b');
         }
     },
 

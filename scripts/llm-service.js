@@ -38,6 +38,10 @@ export const LLMService = {
                 })
             });
 
+            if (response.status === 403) {
+                throw new Error('CORS Error: Please start Ollama with OLLAMA_ORIGINS="*" environment variable.');
+            }
+
             if (!response.ok) {
                 throw new Error(`Ollama API error: ${response.status}`);
             }
