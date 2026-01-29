@@ -11,6 +11,7 @@ let activeKeywords = [];
 let easyApplyEnabled = false;
 let verificationEnabled = true;
 let hideUnverified = false;
+let minHourlyRate = 0;
 let lastProcessedJobId = null;
 const ANALYSIS_CACHE_KEY = 'ljh_job_analysis_cache';
 
@@ -19,11 +20,12 @@ const ANALYSIS_CACHE_KEY = 'ljh_job_analysis_cache';
  */
 async function loadSettings() {
     return new Promise((resolve) => {
-        chrome.storage.local.get(['keywords', 'easyApplyEnabled', 'verificationEnabled', 'hideUnverified'], (result) => {
+        chrome.storage.local.get(['keywords', 'easyApplyEnabled', 'verificationEnabled', 'hideUnverified', 'minHourlyRate'], (result) => {
             activeKeywords = (result.keywords || []).filter(k => k.enabled);
             easyApplyEnabled = !!result.easyApplyEnabled;
             verificationEnabled = result.verificationEnabled !== undefined ? result.verificationEnabled : true;
             hideUnverified = !!result.hideUnverified;
+            minHourlyRate = result.minHourlyRate || 0;
             resolve();
         });
     });
@@ -139,6 +141,39 @@ function applyVerificationUI(card, data) {
 }
 
 /**
+ * Extracts and normalizes salary to hourly rate.
+ * @param {string} text 
+ * @returns {number|null} Hourly rate or null if not found
+ */
+function extractHourlyRate(text) {
+    // Regex for salary ranges like "$100,000/yr", "$50.00/hr", "$80K/yr"
+    // Capture group 1: Amount (can be K based), Group 2: Unit (yr/hr)
+    // Simplified regex to catch variations
+    
+    // Pattern 1: $X/hr or $X/hour
+    const hourlyMatch = text.match(/\$(\d{1,3}(?:,\d{3})*(?:\.\d{2})?)\s*\/\s*(?:hr|hour)/i);
+    if (hourlyMatch) {
+        return parseFloat(hourlyMatch[1].replace(/,/g, ''));
+    }
+
+    // Pattern 2: $X/yr or $X/year or $XK/yr
+    const yearlyMatch = text.match(/\$(\d{1,3}(?:,\d{3})*|\d+K)\s*\/\s*(?:yr|year|annum)/i);
+    if (yearlyMatch) {
+        let rawAmount = yearlyMatch[1].replace(/,/g, '').toUpperCase();
+        let amount = 0;
+        if (rawAmount.includes('K')) {
+            amount = parseFloat(rawAmount.replace('K', '')) * 1000;
+        } else {
+            amount = parseFloat(rawAmount);
+        }
+        // Normalize: Yearly / 2080 (standard full-time hours)
+        return amount / 2080;
+    }
+
+    return null;
+}
+
+/**
  * Applies filtering to a job card.
  * @param {Element} card - The .job-card-container element
  */
@@ -159,16 +194,63 @@ function applyFiltersToCard(card) {
     const title = titleEl ? titleEl.textContent.trim() : '';
     const isEasyApply = !!applyMethodEl;
 
+    // Check for salary/money information
+    const cardText = card.textContent;
+    const hasMoney = /\$|[\d,]+ (USD|EUR|GBP|salary|annum|year|hr|hour)/i.test(cardText);
+    
+    // Check for GraphQL
+    const hasGraphQL = /GraphQL/i.test(cardText) || /GraphQL/i.test(title);
+
     let shouldFilter = false;
     let filterReason = '';
 
-    // Check keywords
-    for (const keyword of activeKeywords) {
-        if (companyName.toLowerCase().includes(keyword.text.toLowerCase()) || 
-            title.toLowerCase().includes(keyword.text.toLowerCase())) {
+    // Filter if no money mentioned
+    if (!hasMoney) {
+        shouldFilter = true;
+        filterReason = 'No Salary Info';
+    }
+
+    // Filter if GraphQL mentioned
+    if (!shouldFilter && hasGraphQL) {
+        shouldFilter = true;
+        filterReason = 'GraphQL (Blocked)';
+    }
+    
+    // Filter by Min Hourly Rate
+    if (!shouldFilter && minHourlyRate > 0) {
+        // Find salary text element specifically to avoid scraping random numbers
+        // Often in a specific metadata item
+        const metadataItems = card.querySelectorAll('.job-card-container__metadata-item');
+        let extractedRate = null;
+        
+        for (const item of metadataItems) {
+            const rate = extractHourlyRate(item.textContent);
+            if (rate !== null) {
+                extractedRate = rate;
+                break;
+            }
+        }
+
+        // Fallback to full text if specific metadata not found (though risky)
+        if (extractedRate === null) {
+            extractedRate = extractHourlyRate(cardText);
+        }
+
+        if (extractedRate !== null && extractedRate < minHourlyRate) {
             shouldFilter = true;
-            filterReason = `Matched: ${keyword.text}`;
-            break;
+            filterReason = `Rate < $${minHourlyRate}/hr`;
+        }
+    }
+
+    // Check keywords
+    if (!shouldFilter) {
+        for (const keyword of activeKeywords) {
+            if (companyName.toLowerCase().includes(keyword.text.toLowerCase()) || 
+                title.toLowerCase().includes(keyword.text.toLowerCase())) {
+                shouldFilter = true;
+                filterReason = `Matched: ${keyword.text}`;
+                break;
+            }
         }
     }
 
@@ -193,6 +275,9 @@ function applyFiltersToCard(card) {
             
             const target = companyNameEl ? companyNameEl.parentElement : card;
             target.appendChild(label);
+        } else {
+             // Update reason if label exists
+             card.querySelector('.ljh-filter-label').textContent = filterReason;
         }
     } else {
         card.style.opacity = '1';
@@ -453,7 +538,7 @@ function setupObserver() {
  */
 function listenForChanges() {
     chrome.storage.onChanged.addListener(async (changes, area) => {
-        if (area === 'local' && (changes.keywords || changes.easyApplyEnabled || changes.verificationEnabled || changes.hideUnverified)) {
+        if (area === 'local' && (changes.keywords || changes.easyApplyEnabled || changes.verificationEnabled || changes.hideUnverified || changes.minHourlyRate)) {
             await loadSettings();
             reprocessAllCards();
         }

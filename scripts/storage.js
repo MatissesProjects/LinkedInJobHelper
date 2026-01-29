@@ -58,6 +58,11 @@ export const StorageService = {
         if (minScoreThreshold === undefined) {
             await this.setMinScoreThreshold(7);
         }
+
+        const minHourlyRate = await this.getMinHourlyRate();
+        if (minHourlyRate === undefined) {
+            await this.setMinHourlyRate(0); // 0 means disabled
+        }
     },
 
     /**
@@ -278,6 +283,22 @@ export const StorageService = {
     async setMinScoreThreshold(score) {
         return new Promise((resolve) => {
             chrome.storage.local.set({ minScoreThreshold: score }, () => {
+                resolve();
+            });
+        });
+    },
+
+    async getMinHourlyRate() {
+        return new Promise((resolve) => {
+            chrome.storage.local.get(['minHourlyRate'], (result) => {
+                resolve(result.minHourlyRate);
+            });
+        });
+    },
+
+    async setMinHourlyRate(rate) {
+        return new Promise((resolve) => {
+            chrome.storage.local.set({ minHourlyRate: rate }, () => {
                 resolve();
             });
         });

@@ -21,6 +21,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     
     const idealRoleTextarea = document.getElementById('ideal-role-text');
     const minScoreThresholdInput = document.getElementById('min-score-threshold');
+    const minHourlyRateInput = document.getElementById('min-hourly-rate');
 
     /**
      * Renders the list of keyword tags.
@@ -130,6 +131,14 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
     });
 
+    // Min Hourly Rate
+    minHourlyRateInput.addEventListener('input', async (e) => {
+        const val = parseInt(e.target.value);
+        if (!isNaN(val)) {
+            await StorageService.setMinHourlyRate(val);
+        }
+    });
+
     // Easy Apply toggle event
     easyApplyToggle.addEventListener('change', async (e) => {
         await StorageService.setEasyApplyEnabled(e.target.checked);
@@ -191,6 +200,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     idealRoleTextarea.value = await StorageService.getIdealRoleText() || '';
     minScoreThresholdInput.value = await StorageService.getMinScoreThreshold() || 7;
+    minHourlyRateInput.value = await StorageService.getMinHourlyRate() || 0;
 
     renderTags();
     renderPriorityTags();
