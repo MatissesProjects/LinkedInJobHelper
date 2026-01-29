@@ -11,6 +11,8 @@ let activeKeywords = [];
 let easyApplyEnabled = false;
 let verificationEnabled = true;
 let hideUnverified = false;
+let lastProcessedJobId = null;
+const ANALYSIS_CACHE_KEY = 'ljh_job_analysis_cache';
 
 /**
  * Loads the current settings from storage.
@@ -23,6 +25,51 @@ async function loadSettings() {
             verificationEnabled = result.verificationEnabled !== undefined ? result.verificationEnabled : true;
             hideUnverified = !!result.hideUnverified;
             resolve();
+        });
+    });
+}
+
+/**
+ * Helper to get Job ID from URL.
+ */
+function getJobIdFromUrl() {
+    const params = new URLSearchParams(window.location.search);
+    if (params.has('currentJobId')) {
+        return params.get('currentJobId');
+    }
+    const match = window.location.pathname.match(/\/jobs\/view\/(\d+)/);
+    if (match) {
+        return match[1];
+    }
+    return null;
+}
+
+/**
+ * Helper to get cached analysis.
+ */
+async function getCachedAnalysis(jobId) {
+    return new Promise((resolve) => {
+        chrome.storage.local.get([ANALYSIS_CACHE_KEY], (result) => {
+            const cache = result[ANALYSIS_CACHE_KEY] || {};
+            resolve(cache[jobId] || null);
+        });
+    });
+}
+
+/**
+ * Helper to save analysis to cache.
+ */
+async function cacheAnalysis(jobId, text) {
+    return new Promise((resolve) => {
+        chrome.storage.local.get([ANALYSIS_CACHE_KEY], (result) => {
+            const cache = result[ANALYSIS_CACHE_KEY] || {};
+            // Simple LRU-like cleanup: if > 100 items, delete oldest? 
+            // For now, just save.
+            cache[jobId] = {
+                text,
+                timestamp: Date.now()
+            };
+            chrome.storage.local.set({ [ANALYSIS_CACHE_KEY]: cache }, resolve);
         });
     });
 }
@@ -266,6 +313,10 @@ async function runAnalysis(container, btn) {
         btn.disabled = false;
 
         if (response && response.success) {
+            const jobId = getJobIdFromUrl();
+            if (jobId) {
+                cacheAnalysis(jobId, response.data);
+            }
             displayAnalysisResult(container, response.data);
         } else {
             alert('Analysis failed: ' + (response ? response.error : 'Unknown error'));
@@ -309,11 +360,45 @@ function processJobDetails(node) {
     // Check if it's the right container
     if (node.querySelector('#job-details') || node.matches('.jobs-search__job-details')) {
         injectAnalyzeButton(node);
+        checkJobChange(); // Check immediately when details load
     } else {
         // Sometimes the node is a wrapper, search inside
         const details = node.querySelector('.jobs-search__job-details') || 
                         (node.querySelector && node.querySelector('#job-details') ? node : null);
-        if (details) injectAnalyzeButton(details);
+        if (details) {
+            injectAnalyzeButton(details);
+            checkJobChange();
+        }
+    }
+}
+
+/**
+ * Monitors the URL for job ID changes.
+ */
+async function checkJobChange() {
+    const currentId = getJobIdFromUrl();
+    
+    // If ID changed or we haven't processed this ID's UI yet
+    if (currentId && currentId !== lastProcessedJobId) {
+        lastProcessedJobId = currentId;
+        
+        // Find the container again as it might have been replaced
+        const detailsContainer = document.querySelector('.jobs-search__job-details') || 
+                                 document.querySelector('.job-view-layout') ||
+                                 document.querySelector('.jobs-unified-top-card__content-container')?.closest('.jobs-search__job-details');
+
+        if (detailsContainer) {
+            const cached = await getCachedAnalysis(currentId);
+            if (cached) {
+                // Ensure button is there (might be redundant but safe)
+                injectAnalyzeButton(detailsContainer);
+                displayAnalysisResult(detailsContainer, cached.text);
+            } else {
+                // Clear old analysis
+                const existing = detailsContainer.querySelector('.ljh-analysis-result');
+                if (existing) existing.remove();
+            }
+        }
     }
 }
 
@@ -326,7 +411,10 @@ function reprocessAllCards() {
 
     // Also check for already open details pane
     const details = document.querySelector('.jobs-search__job-details');
-    if (details) injectAnalyzeButton(details);
+    if (details) {
+        injectAnalyzeButton(details);
+        checkJobChange();
+    }
 }
 
 /**
@@ -378,4 +466,5 @@ function listenForChanges() {
     reprocessAllCards();
     setupObserver();
     listenForChanges();
+    setInterval(checkJobChange, 500); // Check for URL/Job changes frequently
 })();
