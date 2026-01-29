@@ -6,11 +6,11 @@ This plan implements a system for users to define and highlight their "ideal" jo
 - [x] Task: Update `StorageService` to handle new preferences. 9b53dbf
     - [x] Add `priorityKeywords`, `idealRoleText`, and `minScoreThreshold` with defaults.
     - [x] Implement getters and setters in `scripts/storage.js`.
-- [~] Task: Update Popup UI for Ideal Criteria.
-    - [ ] Add "Ideal Job Criteria" section to `popup/popup.html`.
-    - [ ] Implement keyword management for the Priority list in `popup/popup.js`.
-    - [ ] Bind the text field and threshold input to storage.
-- [ ] Task: Conductor - User Manual Verification 'Data Management & Configuration' (Protocol in workflow.md)
+- [x] Task: Update Popup UI for Ideal Criteria. db0c082
+    - [x] Add "Ideal Job Criteria" section to `popup/popup.html`.
+    - [x] Implement keyword management for the Priority list in `popup/popup.js`.
+    - [x] Bind the text field and threshold input to storage.
+- [~] Task: Conductor - User Manual Verification 'Data Management & Configuration' (Protocol in workflow.md)
 
 ## Phase 2: Priority Highlighting (Content Script)
 - [ ] Task: Implement Priority Keyword Detection.
