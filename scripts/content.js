@@ -8,10 +8,12 @@
 console.log('LinkedInJobHelper: Content script loaded.');
 
 let activeKeywords = [];
+let priorityKeywords = [];
 let easyApplyEnabled = false;
 let verificationEnabled = true;
 let hideUnverified = false;
 let minHourlyRate = 0;
+let idealRoleText = '';
 let lastProcessedJobId = null;
 const ANALYSIS_CACHE_KEY = 'ljh_job_analysis_cache';
 
@@ -20,12 +22,14 @@ const ANALYSIS_CACHE_KEY = 'ljh_job_analysis_cache';
  */
 async function loadSettings() {
     return new Promise((resolve) => {
-        chrome.storage.local.get(['keywords', 'easyApplyEnabled', 'verificationEnabled', 'hideUnverified', 'minHourlyRate'], (result) => {
+        chrome.storage.local.get(['keywords', 'easyApplyEnabled', 'verificationEnabled', 'hideUnverified', 'minHourlyRate', 'priorityKeywords', 'idealRoleText'], (result) => {
             activeKeywords = (result.keywords || []).filter(k => k.enabled);
+            priorityKeywords = (result.priorityKeywords || []).filter(k => k.enabled);
             easyApplyEnabled = !!result.easyApplyEnabled;
             verificationEnabled = result.verificationEnabled !== undefined ? result.verificationEnabled : true;
             hideUnverified = !!result.hideUnverified;
             minHourlyRate = result.minHourlyRate || 0;
+            idealRoleText = result.idealRoleText || '';
             resolve();
         });
     });
@@ -174,6 +178,87 @@ function extractHourlyRate(text) {
 }
 
 /**
+ * Calculates a match score based on priority keywords.
+ * @param {string} text 
+ * @returns {number} 0-100
+ */
+function calculateMatchScore(text) {
+    if (priorityKeywords.length === 0) return 0;
+    
+    let matches = 0;
+    const lowerText = text.toLowerCase();
+    
+    priorityKeywords.forEach(k => {
+        if (lowerText.includes(k.text.toLowerCase())) {
+            matches++;
+        }
+    });
+
+    return Math.round((matches / priorityKeywords.length) * 100);
+}
+
+/**
+ * Applies priority highlighting and match score to a job card.
+ * @param {Element} card 
+ */
+function applyPriorityHighlighting(card) {
+    const titleEl = card.querySelector('.job-card-list__title--link') || card.querySelector('.artdeco-entity-lockup__title');
+    const companyNameEl = card.querySelector('.artdeco-entity-lockup__subtitle');
+    const cardText = card.textContent;
+    const title = titleEl ? titleEl.textContent.trim() : '';
+    
+    const score = calculateMatchScore(cardText);
+    const hasMatch = score > 0;
+
+    const existingLabel = card.querySelector('.ljh-priority-label');
+    const existingBadge = card.querySelector('.ljh-match-badge');
+
+    if (hasMatch) {
+        // Priority Label
+        if (!existingLabel) {
+            const label = document.createElement('div');
+            label.className = 'ljh-priority-label';
+            label.textContent = '⭐ Priority Match';
+            label.style.cssText = `
+                display: inline-block;
+                background-color: #fdfc96;
+                color: #856404;
+                padding: 2px 8px;
+                border-radius: 12px;
+                font-size: 11px;
+                font-weight: bold;
+                margin-top: 4px;
+                border: 1px solid #ffeeba;
+            `;
+            const target = companyNameEl ? companyNameEl.parentElement : card;
+            target.appendChild(label);
+        }
+
+        // Match Score Badge
+        if (!existingBadge) {
+            const badge = document.createElement('span');
+            badge.className = 'ljh-match-badge';
+            badge.style.cssText = `
+                margin-left: 8px;
+                padding: 2px 6px;
+                background-color: #e6f4ea;
+                color: #1e8e3e;
+                border-radius: 4px;
+                font-size: 11px;
+                font-weight: bold;
+            `;
+            badge.textContent = `${score}% Match`;
+            titleEl?.parentElement?.appendChild(badge);
+        } else {
+            existingBadge.textContent = `${score}% Match`;
+        }
+    } else {
+        if (existingLabel) existingLabel.remove();
+        if (existingBadge) existingBadge.remove();
+    }
+}
+
+/**
  * Applies filtering to a job card.
  * @param {Element} card - The .job-card-container element
  */
@@ -284,6 +369,9 @@ function applyFiltersToCard(card) {
         card.style.filter = 'none';
         const label = card.querySelector('.ljh-filter-label');
         if (label) label.remove();
+        
+        // Only apply priority if not filtered
+        applyPriorityHighlighting(card);
     }
 
     // Trigger verification if enabled and not already verified/pending
@@ -368,7 +456,7 @@ async function runAnalysis(container, btn) {
     btn.disabled = true;
 
     // Create prompt
-    const prompt = `
+    let prompt = `
         You are an expert technical recruiter and career coach. 
         Analyze the following job posting for a Senior Software Engineer.
         
@@ -389,7 +477,16 @@ async function runAnalysis(container, btn) {
            - Innovation/Uniqueness
            - Clarity of Role
            - Potential for Impact
-        
+    `;
+
+    if (idealRoleText) {
+        prompt += `
+        5. **Alignment with Ideal Role**: The user is looking for: "${idealRoleText}". 
+           Evaluate how well this job matches their specific career goals and preferences.
+        `;
+    }
+
+    prompt += `
         Format your response using bold headers for each section.
     `;
 
@@ -538,7 +635,7 @@ function setupObserver() {
  */
 function listenForChanges() {
     chrome.storage.onChanged.addListener(async (changes, area) => {
-        if (area === 'local' && (changes.keywords || changes.easyApplyEnabled || changes.verificationEnabled || changes.hideUnverified || changes.minHourlyRate)) {
+        if (area === 'local' && (changes.keywords || changes.easyApplyEnabled || changes.verificationEnabled || changes.hideUnverified || changes.minHourlyRate || changes.priorityKeywords)) {
             await loadSettings();
             reprocessAllCards();
         }
