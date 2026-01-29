@@ -4,5 +4,5 @@ This file tracks all major tracks for the project. Each track has its own detail
 
 ---
 
-- [~] **Track: Company Verification & Basic Info Retrieval**
+- [x] **Track: Company Verification & Basic Info Retrieval**
   *Link: [./tracks/company_verification_20260128/](./tracks/company_verification_20260128/)*
