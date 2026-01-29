@@ -33,4 +33,4 @@ This plan details the steps to connect the LinkedInJobHelper extension to a loca
 ## Phase 5: Testing & Refinement
 - [x] Task: Write unit tests for LLMService. ef48a18
 - [x] Task: Test with a real local Ollama instance. ef48a18
-- [ ] Task: Refine the prompt for better results.
+- [x] Task: Refine the prompt for better results.

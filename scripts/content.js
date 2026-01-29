@@ -237,18 +237,28 @@ async function runAnalysis(container, btn) {
 
     // Create prompt
     const prompt = `
-        Analyze this job posting:
+        You are an expert technical recruiter and career coach. 
+        Analyze the following job posting for a Senior Software Engineer.
+        
         Role: ${data.title}
         Company: ${data.company}
         
         Description:
-        ${data.description.substring(0, 3000)} (truncated)
+        ${data.description.substring(0, 5000)}
 
-        Please provide:
-        1. A 2-sentence summary.
-        2. A "Green Flags" list (max 3).
-        3. A "Red Flags" list (max 3).
-        4. An "Interestingness Score" (1-10) for a senior engineer.
+        ---
+        Please provide a structured analysis with the following sections:
+        
+        1. **Summary**: A concise 2-sentence overview of the role and the company's mission.
+        2. **Green Flags**: List up to 3 strong positive indicators (e.g., modern tech stack, clear growth path, unique problem space).
+        3. **Red Flags**: List up to 3 potential concerns (e.g., vague requirements, "rockstar" culture, legacy tech debt indicators).
+        4. **Interestingness Score**: A score from 1 to 10 based on:
+           - Technical Challenge
+           - Innovation/Uniqueness
+           - Clarity of Role
+           - Potential for Impact
+        
+        Format your response using bold headers for each section.
     `;
 
     chrome.runtime.sendMessage({ action: 'analyzeJob', prompt }, (response) => {
