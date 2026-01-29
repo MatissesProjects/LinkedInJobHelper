@@ -1,0 +1,8 @@
+{
+  "track_id": "ideal_job_matcher_20260128",
+  "type": "feature",
+  "status": "new",
+  "created_at": "2026-01-28T17:37:00Z",
+  "updated_at": "2026-01-28T17:37:00Z",
+  "description": "build out something around allowing the user to add what they want in a job, maybe a few key terms and a text field that we can look to see if the job description is close to at all"
+}
